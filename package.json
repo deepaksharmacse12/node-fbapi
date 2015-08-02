@@ -1,0 +1,7 @@
+{
+  "name": "fb-authentication",
+  "main": "server.js",
+  "dependencies" : {
+    "express" : "~4.10.2"
+  }
+}

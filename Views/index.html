@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<title>Facebook Login JavaScript Example</title>
+<meta charset="UTF-8">
+</head>
+<body>
+<script>
+
+  function statusChangeCallback(response) {
+    
+    //response has status and authtokens
+    // console.log(response);
+    if (response.status === 'connected') {
+      // testAPI();
+      // Ajax call to the server
+      console.log("response.authResponse.accessToken", response.authResponse.accessToken);
+      $.ajax({
+        url: "/friends",
+        cache: false,
+        type: "POST",
+        dataType: "json",
+        data: {"accessToken" : response.authResponse.accessToken},                
+        success: function(response){
+          console.log("Call to /friends was successful");
+        }
+      });      
+    } else if (response.status === 'not_authorized') {
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+    }
+  }
+
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '1463939933929187',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.2' // use version 2.2
+  });
+  };
+
+// Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me/friends?fields=installed',
+        function(response) {
+           console.log(response);
+        });
+  }
+  
+  function logOut(){
+    FB.logout(function(response) {
+        // Person is now logged out
+        console.log("FB.logout", response);
+    });
+  };
+</script>
+
+<!--
+  Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
+-->
+
+<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+</fb:login-button>
+
+<button onclick = "logOut();">Log Out</button>
+
+<div id="status">
+</div>
+
+</body>
+</html>
